@@ -1,23 +1,16 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine
-
-# Set the working directory in the container
+# Build stage
+FROM node:18-alpine AS build
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
-
-# Copy the rest of the application code to the working directory
 COPY . .
-
-# Build the Svelte app
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Command to run the app
-RUN npm run preview
+# Production stage
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=build /app/build ./build
+COPY package*.json ./
+RUN npm install --production
+EXPOSE 3000
+CMD ["node", "./build"]
