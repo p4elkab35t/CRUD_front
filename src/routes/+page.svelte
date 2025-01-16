@@ -23,12 +23,15 @@
     let isAuthenticated: boolean = false;
     let isRegsitration: boolean = false;
   
-    const API_URL = 'http://localhost:3000';
+    const API_URL = 'http://localhost:3000/api';
+
+    const API_AUTH_URL = `${API_URL}/auth`;
+    const API_TASK_URL = `${API_URL}/tasks`;
   
     async function handleRegister(event: Event): Promise<void> {
       event.preventDefault();
       try {
-        const res = await fetch(`${API_URL}/register`, {
+        const res = await fetch(`${API_AUTH_URL}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(registerData),
@@ -46,7 +49,7 @@
     async function handleLogin(event: Event): Promise<void> {
       event.preventDefault();
       try {
-        const res = await fetch(`${API_URL}/login`, {
+        const res = await fetch(`${API_AUTH_URL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(loginData),
@@ -67,7 +70,7 @@
     async function fetchTodos(): Promise<void> {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/list`, {
+        const res = await fetch(`${API_TASK_URL}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -83,7 +86,7 @@
     async function addTodo(): Promise<void> {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/list`, {
+        const res = await fetch(`${API_TASK_URL}/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -105,7 +108,7 @@
     async function deleteTodo(id: number): Promise<void> {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/list/${id}`, {
+        const res = await fetch(`${API_TASK_URL}/${id}`, {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -122,7 +125,7 @@
     async function logout(): Promise<void> {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`${API_URL}/deauth`, {
+        await fetch(`${API_AUTH_URL}/deauth`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         localStorage.removeItem('token');
@@ -138,7 +141,7 @@
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          const res = await fetch(`${API_URL}/auth`, {
+          const res = await fetch(`${API_AUTH_URL}/auth`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           isAuthenticated = res.ok;
